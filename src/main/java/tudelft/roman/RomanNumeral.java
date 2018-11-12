@@ -1,5 +1,8 @@
 package tudelft.roman;
 
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,8 +10,8 @@ public class RomanNumeral {
 
     private static Map<Character, Integer> map;
 
-    static {
-        map = new HashMap<Character, Integer>();
+    private void initMap() {
+        map = new HashMap<>();
         map.put('I', 1);
         map.put('V', 5);
         map.put('X', 10);
@@ -18,20 +21,39 @@ public class RomanNumeral {
         map.put('M', 1000);
     }
 
-    public int convert(String s) {
-
-        int convertedNumber = 0;
-        for(int i = 0; i < s.length(); i++) {
-            int currentNumber = map.get(s.charAt(i));
-            int next = i+1 < s.length() ? map.get(s.charAt(i+1)) : 0;
-
-            if(currentNumber >= next)
-                convertedNumber += currentNumber;
-            else
-                convertedNumber -= currentNumber;
+    public int convert(String romanNumber) {
+        initMap();
+        String romanNumbers = StringUtils.join(map.keySet(), null);
+        int result = 0;
+        if (romanNumber != null && StringUtils.containsOnly(romanNumber, romanNumbers)) {
+            for (int i = 0; i < romanNumber.length(); i++) {
+                int num = map.get(romanNumber.charAt(i));
+                int numNext = 0;
+                int numPrev = 0;
+                try {
+                    numNext = map.get(romanNumber.charAt(i + 1));
+                } catch (IndexOutOfBoundsException ignored) {
+                }
+                try {
+                    numPrev = map.get(romanNumber.charAt(i - 1));
+                } catch (IndexOutOfBoundsException ignore) {
+                }
+                if (numNext != 0 && num < numNext) {
+                    if (num == numPrev) {
+                        System.out.println("Roman number is incorrect");
+                        return 0;
+                    } else {
+                        result -= num;
+                    }
+                } else {
+                    result += num;
+                }
+            }
+        } else {
+            System.out.println("Roman number is incorrect");
         }
-
-        return convertedNumber;
-
+        return result;
     }
+
+
 }
